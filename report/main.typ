@@ -6,6 +6,6 @@
 #show: writeup.with(title: "Assignment 1", author: "Linus Fricke",
     course: "Software Security", semester: "Winter Semester 2026/27")
 
-
+#include "content/01-description.typ"
 
 #block([Total words: #total-words])<no-wc>
