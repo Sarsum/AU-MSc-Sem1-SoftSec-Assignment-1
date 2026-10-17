@@ -1,0 +1,4 @@
+[project]
+name = "expense manager csv generator"
+version = "0.0.1"
+description = "CSV file generator for the expense manager"
