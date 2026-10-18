@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, HTTPException, Depends, Body
+from fastapi import FastAPI, HTTPException, Depends, Body, Response
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 import requests
@@ -15,6 +15,7 @@ from utils import hash_password, verify_password, DUMMY_HASH, load_keys, create_
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
 RESOURCES_BASE_URL = os.getenv("RESOURCES_BASE_URL", "http://localhost:8001")
+EXPORT_BASE_URL = os.getenv("EXPORT_BASE_URL", "http://localhost:8002")
 
 # lifespan context manager to create tables on startup
 @asynccontextmanager
@@ -108,12 +109,44 @@ def request_bucket_create(payload: dict = Body(...), current_user: Tuple[int, st
     system_token = create_token("system", user_id, role, {"action": "create_bucket"})
     return relay_request(url=f"{RESOURCES_BASE_URL}/bucket", token=system_token, json_body=payload)
 
+@app.post("/bucket/{bucket_name}/reassign")
+def request_reassign_bucket(bucket_name: str, payload: dict = Body(...), current_user: Tuple[int, str] = Depends(get_current_user)):
+    user_id, role = current_user
+    system_token = create_token("system", user_id, role, {"action": "reassign_bucket"})
+    return relay_request(url=f"{RESOURCES_BASE_URL}/bucket/{bucket_name}/reassign", token=system_token, json_body=payload)
+
+@app.post("/bucket/{bucket_name}/export")
+def request_get_transactions(bucket_name: str, current_user: Tuple[int, str] = Depends(get_current_user)):
+    user_id, role = current_user
+    system_token = create_token("system", user_id, role, {"action": "export_transactions"})
+    get_token = create_token("system", user_id, role, {"action": "get_transactions"})
+    upload_token = create_token("system", user_id, role, {"action": "upload_transactions"})
+    return relay_request(url=f"{EXPORT_BASE_URL}/export-transactions", token=system_token, json_body={"bucket_name": bucket_name, "export_token": get_token, "upload_token": upload_token})
+
 @app.post("/transaction")
 def request_add_transaction(payload: dict = Body(...), current_user: Tuple[int, str] = Depends(get_current_user)):
     user_id, role = current_user
     system_token = create_token("system", user_id, role, {"action": "add_transaction"})
     return relay_request(url=f"{RESOURCES_BASE_URL}/transaction", token=system_token, json_body=payload)
 
-@app.post("/export/{bucket_id}")
-def request_export(bucket_id: int, current_user: dict = Depends(get_current_user)):
-    return ""
+@app.get("/exports")
+async def request_get_export(bucket_name: str, current_user: Tuple[int, str] = Depends(get_current_user)):
+    user_id, role = current_user
+    print(bucket_name)
+    system_token = create_token("system", user_id, role, {"action": "download_export"})
+    headers = {
+        "Authorization": f"Bearer {system_token}"
+    }
+    response = requests.get(f"{RESOURCES_BASE_URL}/exports?bucket_name={bucket_name}", headers=headers)
+    if response.status_code != 200:
+        try:
+            error_detail = response.json().get("detail", response.text)
+        except ValueError:
+            error_detail = response.text
+            
+        # Re-raise the exact status code and message from the target app
+        raise HTTPException(
+            status_code=response.status_code,
+            detail=error_detail
+    )
+    return Response(content=response.content, media_type="text/csv")
