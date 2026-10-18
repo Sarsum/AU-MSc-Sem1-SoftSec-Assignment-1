@@ -1,4 +1,8 @@
 [project]
-name = "expense manager csv generator"
+name = "csv-generator"
 version = "0.0.1"
 description = "CSV file generator for the expense manager"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

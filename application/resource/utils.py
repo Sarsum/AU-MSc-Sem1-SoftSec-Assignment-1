@@ -1,9 +1,8 @@
 from cryptography.hazmat.primitives import serialization
-from datetime import datetime, timezone, timedelta
 import jwt
 import os
 from secrets import token_hex
-from typing import Any, Literal
+from typing import Any
 
 JWT_PUBLIC_KEY = b""
 
