@@ -21,8 +21,8 @@ jobs:
       - name: Install application and test dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r application/api/requirements.txt pytest
-          python -m pip install ./dependency
+          python -m pip install -r application/api/requirements.txt
+          python -m pip install ./dependency pytest
       - name: Run fresh-environment service tests
         run: python -m pytest -q
 
