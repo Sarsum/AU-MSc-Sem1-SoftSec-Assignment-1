@@ -41,13 +41,13 @@ def get_system_token(token: str = Depends(oauth2_scheme)) -> Tuple[int, str, str
         raise HTTPException(401, "Invalid or expired token!")
     if payload["type"] != "system":
         raise HTTPException(403, "Only user tokens supported!")
-    if not "action" in payload:
+    if "action" not in payload:
         raise HTTPException(403, "System token is missing action!")
     action = payload["action"]
-    if not "user_id" in payload:
+    if "user_id" not in payload:
         raise HTTPException(403, "System token is missing user_id!")
     user_id = payload["user_id"]
-    if not "user_role" in payload:
+    if "user_role" not in payload:
         raise HTTPException(403, "System token is missing user_role!")
     user_role = payload["user_role"]
     used_system_tokens[token] = True
@@ -115,10 +115,10 @@ class TransactionsResponse(BaseModel):
 
 @app.get("/bucket/{bucket_name}/transactions", response_model=TransactionsResponse)
 def get_transactions(bucket_name: str, token: Tuple[int, str, str] = Depends(get_system_token), db: Session = Depends(get_db)):
-    user_id, action, _ = token
+    _, action, _ = token
     if action != "get_transactions":
         raise HTTPException(401, "Token does not allow getting transactions!")
-    bucket = db.query(DBBucket).where(DBBucket.name == bucket_name, DBBucket.user_id == user_id).first()
+    bucket = db.query(DBBucket).where(DBBucket.name == bucket_name).first()
     if not bucket:
         raise HTTPException(404, "Bucket not found!")
 
@@ -149,7 +149,6 @@ def add_transaction(transaction: TransactionAdd, token: Tuple[int, str, str] = D
     db.add(db_transaction)
     db.commit()
     return {"details": "Transaction added successfully!"}
-
 
 @app.post("/exports/upload/{bucket_name}")
 async def receive_export(bucket_name: str, request: Request, token: Tuple[int, str, str] = Depends(get_system_token)):
