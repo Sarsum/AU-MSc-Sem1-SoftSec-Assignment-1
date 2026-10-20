@@ -57,3 +57,20 @@ jobs:
             -Dsonar.sources=application,dependency
             -Dsonar.tests=tests
             -Dsonar.python.version=3.12
+
+  docker-build:
+    name: Build ${{ matrix.dockerfile }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - dockerfile: app-api.Dockerfile
+            image: app-api
+          - dockerfile: app-export.Dockerfile
+            image: app-export
+          - dockerfile: app-resource.Dockerfile
+            image: app-resource
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build Docker image
+        run: docker build --file "${{ matrix.dockerfile }}" --tag "${{ matrix.image }}" .
