@@ -5,7 +5,6 @@ import jwt
 import os
 from secrets import token_hex
 from typing import Any, Literal
-import requests
 
 def hash_password(password: str) -> str:
     pw_bytes = password.encode("utf-8")
