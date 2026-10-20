@@ -9,8 +9,8 @@ services:
       - ./public.pem:/home/worker/public.pem:ro,z
       - ./private.pem:/home/worker/private.pem:ro,Z
     environment:
-      - RESOURCES_BASE_URL="http://app-resource:8000"
-      - EXPORT_BASE_URL="http://app-export:8000"
+      - RESOURCES_BASE_URL=http://app-resource:8000
+      - EXPORT_BASE_URL=http://app-export:8000
       - JWT_PRIVKEY_FILE=/home/worker/private.pem
       - JWT_PUBKEY_FILE=/home/worker/public.pem
   app-resource:
@@ -28,5 +28,5 @@ services:
     volumes:
       - ./public.pem:/home/worker/public.pem:ro,z
     environment:
-      - RESOURCES_BASE_URL="http://app-resource:8000"
+      - RESOURCES_BASE_URL=http://app-resource:8000
       - JWT_PUBKEY_FILE=/home/worker/public.pem
