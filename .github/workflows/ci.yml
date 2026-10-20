@@ -8,24 +8,6 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Functional and authorization tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: application/api/requirements.txt application/resource/requirements.txt application/export/requirements.txt
-      - name: Install application and test dependencies
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r application/api/requirements.txt -r application/resource/requirements.txt -r application/export/requirements.txt
-          python -m pip install ./dependency pytest
-      - name: Run fresh-environment service tests
-        run: python -m pytest -q
-
   dependency-analysis:
     name: Python dependency audit
     runs-on: ubuntu-latest
@@ -40,6 +22,7 @@ jobs:
           pip-audit -r application/api/requirements.txt -r application/resource/requirements.txt -r application/export/requirements.txt
 
   sonarqube:
+    needs: dependency-analysis
     name: SonarQube static analysis
     runs-on: ubuntu-latest
     steps:
@@ -58,7 +41,27 @@ jobs:
             -Dsonar.tests=tests
             -Dsonar.python.version=3.12
 
+  test:
+    needs: sonarqube
+    name: Functional and authorization tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: application/api/requirements.txt application/resource/requirements.txt application/export/requirements.txt
+      - name: Install application and test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r application/api/requirements.txt -r application/resource/requirements.txt -r application/export/requirements.txt
+          python -m pip install ./dependency pytest
+      - name: Run fresh-environment service tests
+        run: python -m pytest -q
+
   docker-build:
+    needs: test
     name: Build ${{ matrix.dockerfile }}
     runs-on: ubuntu-latest
     strategy:
