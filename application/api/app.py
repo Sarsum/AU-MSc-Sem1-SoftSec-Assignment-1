@@ -52,7 +52,7 @@ def register_user(user: User, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
 
-    return {"success": True, "message": "User created successfully!"}
+    return {"details": "User created successfully!", "data": db_user.id}
 
 @app.post("/login")
 def login_user(user: User, db: Session = Depends(get_db)):
@@ -69,7 +69,7 @@ def login_user(user: User, db: Session = Depends(get_db)):
 
     token = create_token("user", db_user.id, db_user.role, {"username": db_user.username})
 
-    return {"success": True, "message": "Successfully logged in!", "data": token}
+    return {"details": "Successfully logged in!", "data": token}
 
 def get_current_user(token: str = Depends(oauth2_scheme)) -> Tuple[int, str]:
     payload = decode_token(token)
@@ -77,10 +77,10 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> Tuple[int, str]:
         raise HTTPException(401, "Invalid or expired token.")
     if payload["type"] != "user":
         raise HTTPException(403, "Only user tokens supported!")
-    if not "user_id" in payload:
+    if "user_id" not in payload:
         raise HTTPException(401, "User id not present!")
     user_id = payload["user_id"]
-    if not "user_role" in payload:
+    if "user_role" not in payload:
         raise HTTPException(401, "User role not present!")
     user_role = payload["user_role"]
     return user_id, user_role
