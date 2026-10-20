@@ -17,11 +17,11 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
-          cache-dependency-path: application/api/requirements.txt
+          cache-dependency-path: application/api/requirements.txt application/resource/requirements.txt application/export/requirements.txt
       - name: Install application and test dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install -r application/api/requirements.txt
+          python -m pip install -r application/api/requirements.txt -r application/resource/requirements.txt -r application/export/requirements.txt
           python -m pip install ./dependency pytest
       - name: Run fresh-environment service tests
         run: python -m pytest -q
