@@ -26,6 +26,9 @@ Due to the limited timeframe of the assignment, it has been decided to let the a
 Json Web Tokens (JWT) will be used, as they offer the possibility to add metadata such as the user / system id and an expiration date of the token.
 In other cases, it could be moved to another microservice, which can then also be used to validate tokens periodically in case of long validity timeframes.
 
+This results in the following architecture of the application, where the user interacts with the application API, which then forwards requests to the resource service and export service as required:
+#figure(caption: "Application Architecture", image("../Architecture.drawio.png"))
+
 #let diagonal(body-r, body-l, width: auto, height: auto) = {
   box(
     width: width,

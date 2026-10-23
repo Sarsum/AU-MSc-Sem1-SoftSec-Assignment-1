@@ -17,7 +17,6 @@ The following vulnerabilities were intentionally planted in the source code of t
  ```
 
  This ensures that the user role is always set to the default value, which is `user` in this case, and cannot be overridden by the user input.
-#pagebreak()
 2. *CWE-22 -- Path Traversal*: The resource service contains a path traversal vulnerability in the `get_export` function. Due to the files being saved in a separate directory for each user and having only the bucket name as name, an attacker can perform a path traversal attack without any further escape characters. The `get_export` function does not validate the `bucket_name` parameter, allowing an attacker to access files outside of the intended directory structure. This could lead to unauthorized access to sensitive files on the server. For example, an attacker can use the following request to access the resources service's source code: `GET /exports?bucket_name=..%2F..%2Fapp.py`.
 
  This vulnerability can be patched by validating the `bucket_name` parameter to ensure that it does not contain any path traversal characters or sequences. One way to do this is to parse it as a `pathlib.Path` object and retrieve just the name of the file, which will remove any path traversal characters. The patched code would look like this:
