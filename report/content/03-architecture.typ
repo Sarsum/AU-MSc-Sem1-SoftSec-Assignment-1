@@ -1,5 +1,3 @@
-#import "@preview/merman:0.4.0": mermaid
-
 = Application Architecture
 The application consists of three microservices in addition to the database storing all data:
 

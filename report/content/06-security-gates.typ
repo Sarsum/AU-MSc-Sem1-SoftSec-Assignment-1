@@ -1,0 +1,5 @@
+= CI/CD Security Gates
+The development plan outlined in @ssdlc intended a static security analaysis of the source code upon every push / pull request to the repository. For this, the tool Sonarcube was used, which is a widely used tool for static code analysis and security checks. It is integrated into the CI/CD pipeline and automatically runs on every push / pull request to the repository.
+
+However, the Sonarcube analysis in the CI/CD pipeline was not working as expected, as it did not fail the pipeline in case of the intentionally introduced security issues.
+Therefore, the Sonarcube cloud integration has been enabled for the Github project, as can be seen in the pull request of the public respository (#link("https://github.com/Sarsum/AU-MSc-Sem1-SoftSec-Assignment-1/pull/1")). This security gate did indeed work and the scanner discovered the planted security vulnerabilities in the source code, which can be seen in the Sonarcube report (#link("https://github.com/Sarsum/AU-MSc-Sem1-SoftSec-Assignment-1/runs/118694444691")). However, this did not affect the CI/CD pipeline stages following the Sonarcube analysis as intended.
