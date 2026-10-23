@@ -15,7 +15,7 @@ The backend services are designed to only accept requests containing a valid sys
 
 In addition to the id and role of the associated user (which a token always contains), contain system tokens also the action that the service is allowed to perform.
 This ensures that one service token is limited to a specific user and action, which reduces the risk of exposure of sensitive data in case of a compromised service or token.
-
+#pagebreak()
 Furthermore, the service tokens expire after ten minutes and can only be used once, which further reduces the risk of exposure of sensitive data. This one time usage is currently implemented by a cache in the service, which stores the used tokens for ten minutes and denies any requests with a used token.
 
 == Authorization
