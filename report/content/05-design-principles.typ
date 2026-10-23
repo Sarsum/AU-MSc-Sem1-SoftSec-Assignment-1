@@ -1,0 +1,7 @@
+= Security Design Principles
+The following design principles have been applied while developing the application to ensure security by design and reducing the attack surface of the application:
+1. Least privilege: The default role for new users is the _user_ role which does not allow any actions going beyong their own buckets (#link("https://github.com/Sarsum/AU-MSc-Sem1-SoftSec-Assignment-1/blob/main/application/api/app.py#L38")).
+2. Separation of Duties: The application consists of three microservices, each with a specific responsibility. Hence, the Application API handling authentication stores the user data and creates the tokens, while the Resource Service storing the data is responsible for authorizing the requests and the Export Service is only responsible generating an export of the data of a bucket.
+3. Input Validation: All user input is validated against a set of allowed values or patterns to prevent injection attacks and ensure the integrity of the data. THe validation is mostly done by the Pydantic models used in the resource service, which is supported by FastAPI to automatically validate the input of a request against the model (e.g. #link("https://github.com/Sarsum/AU-MSc-Sem1-SoftSec-Assignment-1/blob/main/application/export/app.py#L53-L60")). 
+
+Furthermore, SQLAlchemy is used as the ORM for the application, which prevents SQL injection attacks by using parameterized queries and escaping user input.

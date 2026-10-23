@@ -1,4 +1,4 @@
-= SSDLC <ssdlc>
+= SSDLC / Implementation Plan <ssdlc>
 #show figure: set block(breakable: true)
 == Asset Register
 #figure(caption: "Asset Register", table(
